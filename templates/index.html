@@ -81,10 +81,18 @@
         </form>
         </div>
     <div class="prediction" style="text-align: center; margin-top: 20px;">
-        <h2>Predicted Number: <span id="predicted-number">?</span></h2>
+        {% if predicted_label is defined %}
+            <h2>Predicted Number: <span id="predicted-number">{{ predicted_label }}</span></h2>
+        {% else %}
+            <h2>Predicted Number: <span id="predicted-number">?</span></h2>
+        {% endif %}
     </div>
     <div class="confidence" style="text-align: center; margin-top: 10px;">
-        <h3>Confidence: <span id="confidence-score">?</span></h3>
+        {% if confidence is defined %}
+            <h3>Confidence: <span id="confidence-score">{{ confidence }}</span></h3>
+        {% else %}
+            <h3>Confidence: <span id="confidence-score">?</span></h3>
+        {% endif %}
     </div>
     <div class="reset" style="text-align: center; margin-top: 10px;">
         <button id="reset-button" class="btn rounded" style="padding: 5px 15px; font-size: 14px; font-family: 'Courier New', Courier, monospace">Reset</button>
