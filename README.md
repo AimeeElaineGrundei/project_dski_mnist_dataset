@@ -7,3 +7,7 @@ How to push something to git?
 - git add .
 - git commit -m "changes"
 - git push
+
+How to pull?
+
+- git pull
