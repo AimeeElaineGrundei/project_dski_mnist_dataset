@@ -31,13 +31,13 @@ def index():
 
 @app.route('/history')
 def history():
-    results = fetch_all()
-    return render_template('history.html', results=results)
+    # results = fetch_all()
+    return render_template('history.html')
 
 @app.route('/statistics')
 def statistics():
-    results = fetch_all()
-    return render_template('statistics.html', results=results)
+    # results = fetch_all()
+    return render_template('statistics.html')
 
 @app.route('/predict', methods=['POST'])
 def predict():
