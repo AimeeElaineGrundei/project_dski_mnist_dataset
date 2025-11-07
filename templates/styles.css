@@ -71,3 +71,17 @@ html, body {
   min-height: 100vh;
 }
 
+#active {
+    font-family: 'Courier New', Courier, monospace;
+    color: #CB90A8;
+}
+
+.statistics-container {
+    font-family: Free Mono, monospace;
+    color: #673147;
+}
+
+history-container {
+    font-family: Free Mono, monospace;
+    color: #673147;
+}

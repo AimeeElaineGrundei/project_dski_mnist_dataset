@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <title>Number Predictor</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<div class="page-wrapper">
+<nav class="navbar navbar-expand-md navbar-dark">
+  <div class="container-fluid">
+  <a class="navbar-brand" href="index.html">Number Predictor</a>
+
+  <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#myNavbar" aria-controls="navbarMenu" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+
+    <div class="collapse navbar-collapse" id="myNavbar">
+        <ul class="navbar-nav ms-auto">                   
+            <li><a class="nav-item me-3" href="statistics.html">Statistics</a></li>
+            <li><a id="active" class="nav-item me-3" href="history.html">History</a></li>
+        </ul>
+    </div>
+  </div>
+</nav>
+
+<div class="content">
+    <h2 style="text-align: center; margin-top: 20px; font-family: 'Courier New', Courier, monospace; color: #673147; font-weight: bold"><b>Prediction History</b></h2>
+    <div class="history-container" style="margin-top: 30px; max-width: 800px; margin-left: auto; margin-right: auto;">
+        {% if history %}
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th scope="col">#</th>
+                        <th scope="col">Predicted Digit</th>
+                        <th scope="col">Actual Digit</th>
+                        <th scope="col">Correct</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for entry in history %}
+                    <tr>
+                        <th scope="row">{{ loop.index }}</th>
+                        <td>{{ entry.predicted }}</td>
+                        <td>{{ entry.actual }}</td>
+                        <td>{% if entry.predicted == entry.actual %}Yes{% else %}No{% endif %}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            <p style="text-align: center; font-size: 18px;">No prediction history available.</p>
+        {% endif %}
+    </div>
+</div>
+<div class="footer" style="text-align: center; margin-top: 30px;">
+        <footer><p>&copy; 2025 Number Predictor by Elaine Grundei and Hannah Kraft</p></footer>
+</div>
+</div>
+</body>
+</html>
