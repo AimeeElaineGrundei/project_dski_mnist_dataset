@@ -73,8 +73,6 @@ def predict():
     elif model_type == "MLP":
         # reshape to (1, 28, 28, 1)
         img_array = img_array.reshape(1, 28 * 28)
-
-    image.save("debug_input.png")
     
     predictions = model.predict(img_array)
     predicted_label = int(np.argmax(predictions))
