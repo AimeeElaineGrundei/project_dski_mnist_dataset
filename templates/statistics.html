@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <title>Number Predictor</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
 </head>
@@ -30,11 +31,74 @@
 <div class="content">
     <h2 style="text-align: center; margin-top: 20px; font-family: 'Courier New', Courier, monospace; color: #673147; font-weight: bold"><b>Statistics</b></h2>
     <div class="statistics-container" style="margin-top: 30px; max-width: 600px; margin-left: auto; margin-right: auto;">
+        <p style="font-size: 18px;">Select Model:
+          <select id="modelSelect" class="form-select" style="width: 200px; display: inline-block;">
+              <option value="all" {% if selected_model == 'all' %}selected{% endif %}>All Models</option>
+              {% for model in models %}
+              <option value="{{ model }}" {% if selected_model == model %}selected{% endif %}>{{ model }}</option>
+              {% endfor %}
+          </select>
+        </p>
         <p style="font-size: 18px;">Total Predictions Made: {{ total_predictions }}</p>
         <p style="font-size: 18px;">Correct Predictions: {{ correct_predictions }}</p>
         <p style="font-size: 18px;">Accuracy: {{ accuracy }}%</p>
     </div>
+
+    <div class="charts-container" style="margin-top: 40px; max-width: 800px; margin-left: auto; margin-right: auto;">
+        <h4 style="text-align: center;">Predictions per Digit</h4>
+        <canvas id="predictionsChart" width="400" height="200"></canvas>
+
+        <h4 style="text-align: center; margin-top: 30px;">Accuracy per Digit</h4>
+        <canvas id="accuracyChart" width="400" height="200"></canvas>
+    </div>
 </div>
+
+<script>
+    document.getElementById('modelSelect').addEventListener('change', () => {
+      const selectedModel = document.getElementById('modelSelect').value;
+      window.location.href = `/statistics?model=${selectedModel}`;
+    });
+    
+    const predictionsData = {{ predictions_per_digit|tojson }};
+    const digits = Object.keys(predictionsData);
+    const predictionsValues = Object.values(predictionsData);
+
+    const ctx1 = document.getElementById('predictionsChart').getContext('2d');
+    new Chart(ctx1, {
+        type: 'bar',
+        data: {
+            labels: digits,
+            datasets: [{
+                label: 'Number of Predictions',
+                data: predictionsValues,
+                backgroundColor: 'rgba(103, 49, 71, 0.6)',
+                borderColor: 'rgba(103, 49, 71, 1)',
+                borderWidth: 1
+            }]
+        },
+        options: { scales: { y: { beginAtZero: true } } }
+    });
+
+    const accuracyData = {{ accuracy_per_digit|tojson }};
+    const accuracyValues = Object.values(accuracyData);
+
+    const ctx2 = document.getElementById('accuracyChart').getContext('2d');
+    new Chart(ctx2, {
+        type: 'bar',
+        data: {
+            labels: digits,
+            datasets: [{
+                label: 'Accuracy (%)',
+                data: accuracyValues,
+                backgroundColor: 'rgba(103, 49, 71, 0.6)',
+                borderColor: 'rgba(103, 49, 71, 1)',
+                borderWidth: 1
+            }]
+        },
+        options: { scales: { y: { beginAtZero: true, max: 100 } } }
+    });
+</script>
+
 <div class="footer" style="text-align: center; margin-top: 30px;">
         <footer><p>&copy; 2025 Number Predictor by Elaine Grundei and Hannah Kraft</p></footer>
 </div>
