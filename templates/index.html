@@ -85,16 +85,16 @@
     </script>
 
     <div class="buttons" style="text-align: center; margin-top: 20px;">
-        <form id="numberForm" style="display: inline;">
-            <input type="hidden" name="imageData" id="imageData" required>
-            <button type="button" id="predict-button" class="btn rounded" style="padding: 10px 20px; font-size: 16px; font-family: 'Courier New', Courier, monospace">Predict</button>
-        </form>
+        <button type="button" id="predict-button" class="btn rounded" 
+                style="padding: 10px 20px; font-size: 16px; font-family: 'Courier New', Courier, monospace">
+            Predict
+        </button>
     </div>
 
     <script>
         document.getElementById('predict-button').addEventListener('click', () => {
             const imageData = canvas.toDataURL();
-            document.getElementById('imageData').value = imageData;
+            //document.getElementById('imageData').value = imageData;
 
             fetch('/predict', {
                 method: 'POST',
@@ -106,17 +106,43 @@
                 document.getElementById('predicted-number').textContent = data.prediction;
                 document.getElementById('confidence-score').textContent = 
                     (data.confidence * 100).toFixed(2) + '%';
+                    
+                document.getElementById('feedback-section').style.display = 'block';
+                document.getElementById('predicted_label_input').value = data.prediction;
+                document.getElementById('confidence_input').value = data.confidence;
+                document.getElementById('imageData_input').value = imageData;
             })
             .catch(err => console.error(err));
         });
     </script>
 
-    <div class="prediction" style="text-align: center; margin-top: 20px;">
+   <div class="prediction" style="text-align: center; margin-top: 20px;">
         <h2>Predicted Number: <span id="predicted-number">?</span></h2>
     </div>
+
     <div class="confidence" style="text-align: center; margin-top: 10px;">
         <h3>Confidence: <span id="confidence-score">?</span></h3>
     </div>
+
+    <div id="feedback-section" class="feedback" style="display:none; text-align:center; margin-top:30px;">
+        <h4>Was this prediction correct?</h4>
+        <form method="POST" action="/feedback" style="display: inline-block; margin-top: 10px;">
+            <input type="hidden" id="imageData_input" name="imageData">
+            <input type="hidden" id="predicted_label_input" name="predicted_label">
+            <input type="hidden" id="confidence_input" name="confidence">
+
+            <div class="mb-3">
+                <label for="true_label" class="form-label">Enter the correct number (0-9):</label>
+                <input type="number" name="true_label" id="true_label" min="0" max="9" required class="form-control" style="width: 100px; margin: 0 auto;">
+            </div>
+
+            <button id="submit-feedback" type="submit" class="btn rounded" 
+                style="padding: 10px 20px; font-size: 16px; font-family: 'Courier New', Courier, monospace">
+                Submit Feedback
+            </button>
+        </form>
+    </div>
+
     <div class="reset" style="text-align: center; margin-top: 10px;">
         <button id="reset-button" class="btn rounded" style="padding: 5px 15px; font-size: 14px; font-family: 'Courier New', Courier, monospace">Reset</button>
         <script>
@@ -125,6 +151,11 @@
                 ctx.fillRect(0, 0, canvas.width, canvas.height);
                 document.getElementById('predicted-number').textContent = '?';
                 document.getElementById('confidence-score').textContent = '?';
+
+                const feedbackSection = document.getElementById('feedback-section');
+                if (feedbackSection) {
+                    feedbackSection.style.display = 'none';
+                }
             });
         </script>
     </div>

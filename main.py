@@ -5,7 +5,7 @@ import io
 from database_operations import insert_result, fetch_all, fetch_by_model
 import keras
 from PIL import Image, ImageOps
-from flask import Flask, render_template, request, jsonify
+from flask import Flask, render_template, request, jsonify, flash, url_for, redirect
 import numpy as np
 import os
 import re
@@ -77,19 +77,31 @@ def predict():
     predicted_label = int(np.argmax(predictions))
     confidence = float(np.max(predictions))
     
-    # true_label = data.get('true_label', None)
-    # correct = (predicted_label == true_label) if true_label is not None else None
-    
-    # insert_result(
-    #     model_name='mnist_model1',
-    #     input_data=image_array.tolist(),
-    #     predicted_label=predicted_label,
-    #     true_label=true_label,
-    #     correct=correct,
-    #     confidence=confidence
-    # )
-    
-    return jsonify({"prediction": predicted_label, "confidence": confidence})
+    return jsonify({
+        "prediction": int(predicted_label),
+        "confidence": float(confidence)
+    })
+
+@app.route("/feedback", methods=["POST"])
+def feedback():
+    image_data = request.form["image"]
+    predicted_label = request.form["predicted_label"]
+    true_label = request.form["true_label"]
+    confidence = request.form.get("confidence", None)
+
+    correct = int(predicted_label == true_label)
+
+    insert_result(
+        model_name=model_type,
+        input_data=image_data,
+        predicted_label=predicted_label,
+        true_label=true_label,
+        correct=correct,
+        confidence=confidence
+    )
+
+    flash("Thank You for your feedback! The data has been saved.", "success")
+    return redirect(url_for("index"))
 
 if __name__ == "__main__":
     app.run(debug=True)

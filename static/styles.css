@@ -60,6 +60,12 @@ li {
     color: white;
 }
 
+#submit-feedback {
+    background-color: #673147;
+    font-family:'Courier New', Courier, monospace;
+    color: white;
+}
+
 html, body {
   height: 100%;
   margin: 0;
