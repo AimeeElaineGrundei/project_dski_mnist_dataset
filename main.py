@@ -2,7 +2,7 @@
 import base64
 from io import BytesIO
 import io
-from database_operations import insert_result, fetch_all, fetch_by_model
+from database_operations import insert_result, fetch_all, fetch_by_model, create_table
 import keras
 from PIL import Image, ImageOps
 from flask import Flask, render_template, request, jsonify, flash, url_for, redirect
@@ -11,6 +11,9 @@ import os
 import re
 
 app = Flask(__name__)
+app.secret_key = "supersecretkey"
+
+create_table()
 
 model_type = "MLP"
 

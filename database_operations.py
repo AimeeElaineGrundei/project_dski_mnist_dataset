@@ -33,7 +33,7 @@ def insert_result(model_name, input_data, predicted_label, true_label, correct, 
     cursor = conn.cursor()
     cursor.execute("""
         INSERT INTO cnn_results (timestamp, model_name, input_data, predicted_label, true_label, correct, confidence)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+        VALUES (?, ?, ?, ?, ?, ?, ?)
     """, (
         datetime.now().isoformat(),
         model_name,
