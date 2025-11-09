@@ -57,13 +57,6 @@
             ctx.beginPath();
         });
 
-        // canvas.addEventListener('mouseup', () => {
-        //    drawing = false;
-
-        //    var imageData = canvas.toDataURL();
-        //    document.getElementById('imageData').value = imageData;
-        //});
-
         canvas.addEventListener('mousemove', (event) => {
             if (!drawing) return;
             const rect = canvas.getBoundingClientRect();
