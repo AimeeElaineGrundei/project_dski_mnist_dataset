@@ -39,10 +39,26 @@ def convert_data(image_array):
 def index():
     return render_template('index.html')
 
-@app.route('/history')
+@app.route("/history")
 def history():
-    # results = fetch_all()
-    return render_template('history.html')
+    # get all results from the database
+    results = fetch_all()
+
+    # prepare results for the template
+    # The DB returns: (id, timestamp, model_name, input_data, predicted_label, true_label, correct, confidence)
+    history_list = []
+    
+    for row in results:
+        entry = {
+            "model_name": row[2],  # model_name
+            "predicted": row[4],  # predicted_label
+            "actual": row[5],     # true_label
+            "correct": row[6],    # correct (1/0)
+            "confidence": row[7]  # optional
+        }
+        history_list.append(entry)
+
+    return render_template("history.html", history=history_list)
 
 @app.route('/statistics')
 def statistics():

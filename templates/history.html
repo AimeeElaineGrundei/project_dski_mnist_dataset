@@ -36,6 +36,7 @@
                 <thead>
                     <tr>
                         <th scope="col">#</th>
+                        <th scope="col">Model</th>
                         <th scope="col">Predicted Digit</th>
                         <th scope="col">Actual Digit</th>
                         <th scope="col">Correct</th>
@@ -45,9 +46,10 @@
                     {% for entry in history %}
                     <tr>
                         <th scope="row">{{ loop.index }}</th>
+                        <td>{{entry.model_name}}</td>
                         <td>{{ entry.predicted }}</td>
                         <td>{{ entry.actual }}</td>
-                        <td>{% if entry.predicted == entry.actual %}Yes{% else %}No{% endif %}</td>
+                        <td>{% if entry.correct %}Yes{% else %}No{% endif %}</td>
                     </tr>
                     {% endfor %}
                 </tbody>
