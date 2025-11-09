@@ -66,17 +66,24 @@
   const predictionsData = {{ predictions_per_model|tojson }};
   const accuracyData = {{ accuracy_per_model|tojson }};
 
+  // 🔹 Debug: prüfen, welche Keys ankommen
+  console.log("accuracyData:", accuracyData);
+  Object.keys(accuracyData).forEach(model => {
+      console.log("Model:", model, accuracyData[model], Object.keys(accuracyData[model]));
+  });
+
   function getColor(index, total) {
-      const opacity = 0.5 + 0.5 * (index / Math.max(total-1, 1)); // Helligkeit variieren
+      const opacity = 0.5 + 0.5 * (index / Math.max(total-1, 1));
       return `rgba(${baseColor}, ${opacity})`;
   }
 
+  // 🔹 Predictions Chart
   const datasetsPred = [];
   const modelNames = Object.keys(predictionsData);
   modelNames.forEach((model, i) => {
       datasetsPred.push({
           label: model,
-          data: [...Array(10).keys()].map(d => predictionsData[model][d.toString()] || 0),
+          data: digits.map(d => predictionsData[model][d] !== undefined ? predictionsData[model][d] : 0),
           backgroundColor: getColor(i, modelNames.length)
       });
   });
@@ -84,7 +91,7 @@
   const ctx1 = document.getElementById('predictionsChart').getContext('2d');
   new Chart(ctx1, {
       type: 'bar',
-      data: { labels: [...Array(10).keys()].map(String), datasets: datasetsPred },
+      data: { labels: digits, datasets: datasetsPred },
       options: { 
           responsive: true,
           scales: {
@@ -94,34 +101,53 @@
       }
   });
 
+  // 🔹 Accuracy Chart
   const datasetsAcc = [];
   modelNames.forEach((model, i) => {
       datasetsAcc.push({
           label: model,
-          data: [...Array(10).keys()].map(d => accuracyData[model][d.toString()] || 0),
+          data: digits.map(d => accuracyData[model][d] !== undefined ? accuracyData[model][d] : 0),
           backgroundColor: getColor(i, modelNames.length)
       });
   });
 
+  const ctx2 = document.getElementById('accuracyChart').getContext('2d');
+  new Chart(ctx2, {
+      type: 'bar',
+      data: { labels: digits, datasets: datasetsAcc },
+      options: {
+          responsive: true,
+          scales: { y: { beginAtZero: true, max: 100 } }
+      }
+  });
+
   {% else %}
+  // Single Model
   const predictionsData = {{ predictions_per_digit|tojson }};
   const accuracyData = {{ accuracy_per_digit|tojson }};
 
   const ctx1 = document.getElementById('predictionsChart').getContext('2d');
   new Chart(ctx1, {
       type: 'bar',
-      data: { labels: digits, datasets: [{ label: '{{ selected_model }}', data: digits.map(d => predictionsData[d] || 0), backgroundColor: 'rgba(103,49,71,0.6)' }] },
+      data: { 
+          labels: digits, 
+          datasets: [{ label: '{{ selected_model }}', data: digits.map(d => predictionsData[d] || 0), backgroundColor: 'rgba(103,49,71,0.6)' }] 
+      },
       options: { scales: { y: { beginAtZero: true } } }
   });
 
   const ctx2 = document.getElementById('accuracyChart').getContext('2d');
   new Chart(ctx2, {
       type: 'bar',
-      data: { labels: digits, datasets: [{ label: '{{ selected_model }}', data: digits.map(d => accuracyData[d] || 0), backgroundColor: 'rgba(103,49,71,0.6)' }] },
+      data: { 
+          labels: digits, 
+          datasets: [{ label: '{{ selected_model }}', data: digits.map(d => accuracyData[d] || 0), backgroundColor: 'rgba(103,49,71,0.6)' }] 
+      },
       options: { scales: { y: { beginAtZero: true, max: 100 } } }
   });
   {% endif %}
 </script>
+
 
 <div class="footer" style="text-align: center; margin-top: 30px;">
         <footer><p>&copy; 2025 Number Predictor by Elaine Grundei and Hannah Kraft</p></footer>
