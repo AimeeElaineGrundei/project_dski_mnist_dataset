@@ -10,7 +10,7 @@ Projekt von Hannah und Elaine zum mnist-Dataset
 
 - git pull (to make sure you have the most recent version)
 - git add .
-- git commit -m "<changes>"
+- git commit -m "*changes*"
 - git push
 
 ## How to set up?
