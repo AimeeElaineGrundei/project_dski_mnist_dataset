@@ -61,53 +61,97 @@ def history():
 
     return render_template("history.html", history=history_list)
 
-
 @app.route("/statistics")
 def statistics():
     selected_model = request.args.get('model', 'all')
-    results = fetch_all() if selected_model == 'all' else fetch_by_model(selected_model)
 
-    total_predictions = len(results)
-    correct_predictions = sum([row[6] for row in results])
-
-    accuracy = round((correct_predictions / total_predictions * 100) if total_predictions else 0, 2)
-
-    predictions_counter = Counter()
-    accuracy_counter = {str(i): 0 for i in range(10)}
-    count_per_digit = {str(i): 0 for i in range(10)}
-
-    for row in results:
-        pred = str(row[4])  # predicted_label
-        true = str(row[5])  # true_label
-        correct = row[6]
-
-        predictions_counter[pred] += 1
-        count_per_digit[true] += 1
-        if correct:
-            accuracy_counter[true] += 100
-
-    # calculate accuracy per digit (if count=0 -> 0%)
-    accuracy_per_digit = {}
-    for digit in range(10):
-        digit_str = str(digit)
-        if count_per_digit[digit_str] > 0:
-            accuracy_per_digit[digit_str] = round(accuracy_counter[digit_str] / count_per_digit[digit_str], 2)
-        else:
-            accuracy_per_digit[digit_str] = 0
-
-    all_models = [row[2] for row in fetch_all()]
-    models = sorted(list(set(all_models)))
+    all_results = fetch_all()
+    all_models = sorted(list(set([row[2] for row in all_results])))
     
-    return render_template(
-        "statistics.html",
-        total_predictions=total_predictions,
-        correct_predictions=correct_predictions,
-        accuracy=accuracy,
-        predictions_per_digit=predictions_counter,
-        accuracy_per_digit=accuracy_per_digit,
-        models=models,
-        selected_model=selected_model
-    )
+    if selected_model == 'all' and len(all_models) == 1:
+        selected_model = all_models[0]
+
+    digits = [str(i) for i in range(10)]
+
+    if selected_model == 'all':
+        predictions_per_model = {model: {d: 0 for d in digits} for model in all_models}
+        correct_counts_per_model = {model: {d: 0 for d in digits} for model in all_models}
+        total_counts_per_model = {model: {d: 0 for d in digits} for model in all_models}
+
+        for row in all_results:
+            model_name = row[2]
+            pred = str(row[4])
+            true = str(row[5])
+            correct = row[6]
+
+            predictions_per_model[model_name][pred] += 1
+            total_counts_per_model[model_name][true] += 1
+            if correct:
+                correct_counts_per_model[model_name][true] += 1
+
+        accuracy_per_model = {}
+        for model in all_models:
+            accuracy_per_model[model] = {}
+            for d in digits:
+                if total_counts_per_model[model][d] > 0:
+                    accuracy_per_model[model][d] = round(
+                        correct_counts_per_model[model][d] / total_counts_per_model[model][d] * 100, 2)
+                else:
+                    accuracy_per_model[model][d] = 0
+
+        total_predictions = len(all_results)
+        correct_predictions = sum([row[6] for row in all_results])
+        accuracy = round((correct_predictions / total_predictions * 100) if total_predictions else 0, 2)
+
+        return render_template(
+            "statistics.html",
+            selected_model='all',
+            models=all_models,
+            total_predictions=total_predictions,
+            correct_predictions=correct_predictions,
+            accuracy=accuracy,
+            predictions_per_model=predictions_per_model,
+            accuracy_per_model=accuracy_per_model
+        )
+
+    else:
+        results = fetch_by_model(selected_model)
+        total_predictions = len(results)
+        correct_predictions = sum([row[6] for row in results])
+        accuracy = round((correct_predictions / total_predictions * 100) if total_predictions else 0, 2)
+
+        predictions_counter = {str(i): 0 for i in range(10)}
+        correct_counts = {str(i): 0 for i in range(10)}
+        total_counts = {str(i): 0 for i in range(10)}
+
+        for row in results:
+            pred = str(row[4])
+            true = str(row[5])
+            correct = row[6]
+
+            predictions_counter[pred] += 1
+            total_counts[true] += 1
+            if correct:
+                correct_counts[true] += 1
+
+        accuracy_per_digit = {}
+        for d in digits:
+            if total_counts[d] > 0:
+                accuracy_per_digit[d] = round(correct_counts[d] / total_counts[d] * 100, 2)
+            else:
+                accuracy_per_digit[d] = 0
+
+        return render_template(
+            "statistics.html",
+            selected_model=selected_model,
+            models=all_models,
+            total_predictions=total_predictions,
+            correct_predictions=correct_predictions,
+            accuracy=accuracy,
+            predictions_per_digit=predictions_counter,
+            accuracy_per_digit=accuracy_per_digit
+        )
+
 
 @app.route('/predict', methods=['POST'])
 def predict():

@@ -54,49 +54,73 @@
 </div>
 
 <script>
-    document.getElementById('modelSelect').addEventListener('change', () => {
-      const selectedModel = document.getElementById('modelSelect').value;
-      window.location.href = `/statistics?model=${selectedModel}`;
-    });
-    
-    const predictionsData = {{ predictions_per_digit|tojson }};
-    const digits = Object.keys(predictionsData);
-    const predictionsValues = Object.values(predictionsData);
+  document.getElementById('modelSelect').addEventListener('change', () => {
+    const selectedModel = document.getElementById('modelSelect').value;
+    window.location.href = `/statistics?model=${selectedModel}`;
+  });
 
-    const ctx1 = document.getElementById('predictionsChart').getContext('2d');
-    new Chart(ctx1, {
-        type: 'bar',
-        data: {
-            labels: digits,
-            datasets: [{
-                label: 'Number of Predictions',
-                data: predictionsValues,
-                backgroundColor: 'rgba(103, 49, 71, 0.6)',
-                borderColor: 'rgba(103, 49, 71, 1)',
-                borderWidth: 1
-            }]
-        },
-        options: { scales: { y: { beginAtZero: true } } }
-    });
+  const digits = [...Array(10).keys()].map(String);
 
-    const accuracyData = {{ accuracy_per_digit|tojson }};
-    const accuracyValues = Object.values(accuracyData);
+  {% if selected_model == 'all' %}
+  const baseColor = '103,49,71'; // RGB von #673147
+  const predictionsData = {{ predictions_per_model|tojson }};
+  const accuracyData = {{ accuracy_per_model|tojson }};
 
-    const ctx2 = document.getElementById('accuracyChart').getContext('2d');
-    new Chart(ctx2, {
-        type: 'bar',
-        data: {
-            labels: digits,
-            datasets: [{
-                label: 'Accuracy (%)',
-                data: accuracyValues,
-                backgroundColor: 'rgba(103, 49, 71, 0.6)',
-                borderColor: 'rgba(103, 49, 71, 1)',
-                borderWidth: 1
-            }]
-        },
-        options: { scales: { y: { beginAtZero: true, max: 100 } } }
-    });
+  function getColor(index, total) {
+      const opacity = 0.5 + 0.5 * (index / Math.max(total-1, 1)); // Helligkeit variieren
+      return `rgba(${baseColor}, ${opacity})`;
+  }
+
+  const datasetsPred = [];
+  const modelNames = Object.keys(predictionsData);
+  modelNames.forEach((model, i) => {
+      datasetsPred.push({
+          label: model,
+          data: [...Array(10).keys()].map(d => predictionsData[model][d.toString()] || 0),
+          backgroundColor: getColor(i, modelNames.length)
+      });
+  });
+
+  const ctx1 = document.getElementById('predictionsChart').getContext('2d');
+  new Chart(ctx1, {
+      type: 'bar',
+      data: { labels: [...Array(10).keys()].map(String), datasets: datasetsPred },
+      options: { 
+          responsive: true,
+          scales: {
+              x: { stacked: true },
+              y: { stacked: true, beginAtZero: true }
+          }
+      }
+  });
+
+  const datasetsAcc = [];
+  modelNames.forEach((model, i) => {
+      datasetsAcc.push({
+          label: model,
+          data: [...Array(10).keys()].map(d => accuracyData[model][d.toString()] || 0),
+          backgroundColor: getColor(i, modelNames.length)
+      });
+  });
+
+  {% else %}
+  const predictionsData = {{ predictions_per_digit|tojson }};
+  const accuracyData = {{ accuracy_per_digit|tojson }};
+
+  const ctx1 = document.getElementById('predictionsChart').getContext('2d');
+  new Chart(ctx1, {
+      type: 'bar',
+      data: { labels: digits, datasets: [{ label: '{{ selected_model }}', data: digits.map(d => predictionsData[d] || 0), backgroundColor: 'rgba(103,49,71,0.6)' }] },
+      options: { scales: { y: { beginAtZero: true } } }
+  });
+
+  const ctx2 = document.getElementById('accuracyChart').getContext('2d');
+  new Chart(ctx2, {
+      type: 'bar',
+      data: { labels: digits, datasets: [{ label: '{{ selected_model }}', data: digits.map(d => accuracyData[d] || 0), backgroundColor: 'rgba(103,49,71,0.6)' }] },
+      options: { scales: { y: { beginAtZero: true, max: 100 } } }
+  });
+  {% endif %}
 </script>
 
 <div class="footer" style="text-align: center; margin-top: 30px;">
