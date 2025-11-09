@@ -95,13 +95,18 @@ def statistics():
         else:
             accuracy_per_digit[digit_str] = 0
 
+    all_models = [row[2] for row in fetch_all()]
+    models = sorted(list(set(all_models)))
+    
     return render_template(
         "statistics.html",
         total_predictions=total_predictions,
         correct_predictions=correct_predictions,
         accuracy=accuracy,
         predictions_per_digit=predictions_counter,
-        accuracy_per_digit=accuracy_per_digit
+        accuracy_per_digit=accuracy_per_digit,
+        models=models,
+        selected_model=selected_model
     )
 
 @app.route('/predict', methods=['POST'])
