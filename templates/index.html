@@ -36,69 +36,93 @@
         <p>Draw a digit (0-9) on the canvas below. Double click to clear the canvas.</p>
     </div>
     <div class="canvas-container" style="text-align: center; margin-top: 20px;">
-    <canvas id="canvas" width="280" height="280" style="border:1px solid #673147;">
-        <script>
-            const canvas = document.getElementById('canvas');
-            const ctx = canvas.getContext('2d');
-            let drawing = false;
-
-            canvas.addEventListener('mousedown', () => {
-                drawing = true;
-                ctx.beginPath();
-            });
-
-            canvas.addEventListener('mouseup', () => {
-                drawing = false;
-
-                var imageData = canvas.toDataURL();
-                document.getElementById('imageData').value = imageData;
-            });
-
-            canvas.addEventListener('mousemove', (event) => {
-                if (!drawing) return;
-                const rect = canvas.getBoundingClientRect();
-                const x = event.clientX - rect.left;
-                const y = event.clientY - rect.top;
-                ctx.lineWidth = 20;
-                ctx.lineCap = 'round';
-                ctx.strokeStyle = '#673147;';
-                ctx.lineTo(x, y);
-                ctx.stroke();
-                ctx.beginPath();
-                ctx.moveTo(x, y);
-            });
-
-            canvas.addEventListener('dblclick', () => {
-                ctx.clearRect(0, 0, canvas.width, canvas.height);
-            });
-        </script>
-    </canvas>
+    <canvas id="canvas" width="280" height="280" style="border:1px solid #673147;"></canvas>
     </div>
+
+    <script>
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+        let drawing = false;
+
+        ctx.fillStyle = "white";
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+        canvas.addEventListener('mousedown', () => {
+            drawing = true;
+            ctx.beginPath();
+        });
+
+        canvas.addEventListener('mouseup', () => {
+            drawing = false;
+            ctx.beginPath();
+        });
+
+        // canvas.addEventListener('mouseup', () => {
+        //    drawing = false;
+
+        //    var imageData = canvas.toDataURL();
+        //    document.getElementById('imageData').value = imageData;
+        //});
+
+        canvas.addEventListener('mousemove', (event) => {
+            if (!drawing) return;
+            const rect = canvas.getBoundingClientRect();
+            const x = event.clientX - rect.left;
+            const y = event.clientY - rect.top;
+            ctx.lineWidth = 20;
+            ctx.lineCap = 'round';
+            ctx.strokeStyle = 'black';;
+            ctx.lineTo(x, y);
+            ctx.stroke();
+            ctx.beginPath();
+            ctx.moveTo(x, y);
+        });
+
+        canvas.addEventListener('dblclick', () => {
+            ctx.fillStyle = "white";
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+        });
+    </script>
+
     <div class="buttons" style="text-align: center; margin-top: 20px;">
-        <form id="numberForm" method="POST" action="/predict" style="display: inline;">
+        <form id="numberForm" style="display: inline;">
             <input type="hidden" name="imageData" id="imageData" required>
-            <button type="submit" id="predict-button" class="btn rounded" style="padding: 10px 20px; font-size: 16px; font-family: 'Courier New', Courier, monospace">Predict</button>
+            <button type="button" id="predict-button" class="btn rounded" style="padding: 10px 20px; font-size: 16px; font-family: 'Courier New', Courier, monospace">Predict</button>
         </form>
-        </div>
+    </div>
+
+    <script>
+        document.getElementById('predict-button').addEventListener('click', () => {
+            const imageData = canvas.toDataURL();
+            document.getElementById('imageData').value = imageData;
+
+            fetch('/predict', {
+                method: 'POST',
+                body: new URLSearchParams({ image: imageData }),
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
+            })
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('predicted-number').textContent = data.prediction;
+                document.getElementById('confidence-score').textContent = 
+                    (data.confidence * 100).toFixed(2) + '%';
+            })
+            .catch(err => console.error(err));
+        });
+    </script>
+
     <div class="prediction" style="text-align: center; margin-top: 20px;">
-        {% if predicted_label is defined %}
-            <h2>Predicted Number: <span id="predicted-number">{{ predicted_label }}</span></h2>
-        {% else %}
-            <h2>Predicted Number: <span id="predicted-number">?</span></h2>
-        {% endif %}
+        <h2>Predicted Number: <span id="predicted-number">?</span></h2>
     </div>
     <div class="confidence" style="text-align: center; margin-top: 10px;">
-        {% if confidence is defined %}
-            <h3>Confidence: <span id="confidence-score">{{ confidence }}</span></h3>
-        {% else %}
-            <h3>Confidence: <span id="confidence-score">?</span></h3>
-        {% endif %}
+        <h3>Confidence: <span id="confidence-score">?</span></h3>
     </div>
     <div class="reset" style="text-align: center; margin-top: 10px;">
         <button id="reset-button" class="btn rounded" style="padding: 5px 15px; font-size: 14px; font-family: 'Courier New', Courier, monospace">Reset</button>
         <script>
             document.getElementById('reset-button').addEventListener('click', () => {
-                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                ctx.fillStyle = "white";
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
                 document.getElementById('predicted-number').textContent = '?';
                 document.getElementById('confidence-score').textContent = '?';
             });

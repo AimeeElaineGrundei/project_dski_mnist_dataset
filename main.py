@@ -1,16 +1,23 @@
 ### Imports 
 import base64
 from io import BytesIO
+import io
 from database_operations import insert_result, fetch_all, fetch_by_model
 import keras
-from PIL import Image
+from PIL import Image, ImageOps
 from flask import Flask, render_template, request, jsonify
 import numpy as np
 import os
+import re
 
 app = Flask(__name__)
 
-model_path = os.path.join(os.path.dirname(__file__), 'models', 'mnist_model1.keras')
+model_type = "MLP"
+
+if model_type == "MLP":
+    model_path = os.path.join(os.path.dirname(__file__), 'models', 'mnist_model_simple.keras')
+elif model_type == "CNN":
+    model_path = os.path.join(os.path.dirname(__file__), 'models', 'mnist_model1.keras')
 
 def load_model(model_path: str) -> keras.Model:
     """Load a Keras model from the specified path."""
@@ -41,25 +48,33 @@ def statistics():
 
 @app.route('/predict', methods=['POST'])
 def predict():
-    canvas_data_url = request.form['imageData']
+    # get data from the canvas (base64 string)
+    image_data = request.form['image']
     
-    # Extrahiere den Base64-Teil aus dem Daten-URL
-    _, encoded_data = canvas_data_url.split(',', 1)
+    image_data = image_data.split(",")[1]
+    image = Image.open(io.BytesIO(base64.b64decode(image_data))).convert("L")  # grayscale
+    image = ImageOps.invert(image)  # invert black/white
+    
+    # shrink image to 28x28
+    image = image.resize((28, 28))
+    
+    # cut picture and center the digit
+    image = ImageOps.fit(image, (28, 28), centering=(0.5, 0.5))
 
-    # Dekodiere den Base64-Teil in binäre Daten
-    binary_data = base64.b64decode(encoded_data)
-    
-    temp_image_path = BytesIO(binary_data)
+    # to numpy array and convert (canvas background=0, digit=255)
+    img_array = np.array(image).astype("float32") / 255.0 # normalize to [0, 1]
 
-    img = Image.open(temp_image_path).convert('LA')  # 'LA' = Graustufen
+    if model_type == "CNN":
+        # reshape to (1, 28, 28, 1)
+        img_array = img_array.reshape(1, 28, 28, 1)
+    elif model_type == "MLP":
+        # reshape to (1, 28, 28, 1)
+        img_array = img_array.reshape(1, 28 * 28)
+
+    image.save("debug_input.png")
     
-    img = img.resize((28,28))
-    image_array = np.array(img)
-    
-    input_data = convert_data(image_array)
-    
-    predictions = model.predict(input_data)
-    predicted_label = np.argmax(predictions, axis=1)[0]
+    predictions = model.predict(img_array)
+    predicted_label = int(np.argmax(predictions))
     confidence = float(np.max(predictions))
     
     # true_label = data.get('true_label', None)
@@ -74,11 +89,7 @@ def predict():
     #     confidence=confidence
     # )
     
-    return render_template(
-        'index.html',
-        predicted_label=int(predicted_label),
-        confidence=round(confidence, 4)
-    )
+    return jsonify({"prediction": predicted_label, "confidence": confidence})
 
 if __name__ == "__main__":
     app.run(debug=True)
