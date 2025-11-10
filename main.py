@@ -16,7 +16,7 @@ app.secret_key = "supersecretkey"
 
 create_table()
 
-model_type = "CNN"
+model_type = "MLP"
 
 if model_type == "MLP":
     model_path = os.path.join(os.path.dirname(__file__), 'models', 'mnist_model_simple.keras')
@@ -163,24 +163,35 @@ def predict():
     mean_val = np.mean(np.array(image))
     if mean_val > 127:
         image = ImageOps.invert(image)
+        
+    img_array = np.array(image)
+    img_array = np.where(img_array > 20, img_array, 0)  # delete noise
+
+    coords = np.column_stack(np.where(img_array > 0))   # coordinates of non-zero pixels
+    if coords.size != 0:  # only crop if there are non-zero pixels
+        y_min, x_min = coords.min(axis=0)
+        y_max, x_max = coords.max(axis=0)
+        image = image.crop((x_min, y_min, x_max, y_max))  # crop to bounding box
+
+        # Add square padding
+        w, h = image.size
+        side = max(w, h)
+        square = Image.new("L", (side, side), 0)  # black background 
+        square.paste(image, ((side - w) // 2, (side - h) // 2))
+        image = square
+        
+    image = ImageOps.fit(image, (28, 28), Image.LANCZOS, centering=(0.5, 0.5))
+    # to numpy array and convert (canvas background=0, digit=255)
+    img_array = np.array(image).astype("float32") / 255.0 # normalize to [0, 1]
 
     if model_type == "CNN":
-        image = image.resize((28, 28), Image.LANCZOS)
-        img_array = np.array(image).astype("float32") / 255.0
         # reshape to (1, 28, 28, 1)
         img_array = img_array.reshape(1, 28, 28, 1)
         
     elif model_type == "MLP":
-        # shrink image to 28x28
-        image = image.resize((28, 28))
-        # cut picture and center the digit
-        image = ImageOps.fit(image, (28, 28), centering=(0.5, 0.5))
-        # to numpy array and convert (canvas background=0, digit=255)
-        img_array = np.array(image).astype("float32") / 255.0 # normalize to [0, 1]
-        # reshape to (1, 28, 28, 1)
+        # reshape to (1, 784)
         img_array = img_array.reshape(1, 28 * 28)
     
-    print("Test"*10, img_array)
     predictions = model.predict(img_array)
     predicted_label = int(np.argmax(predictions))
     confidence = float(np.max(predictions))
