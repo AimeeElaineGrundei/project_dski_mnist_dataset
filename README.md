@@ -16,7 +16,7 @@ Projekt von Hannah und Elaine zum mnist-Dataset
 ## How to set up?
 
 - create venv with `python -m venv <name_of_venv>`
-- activate venv with `source/bin/activate`
+- activate venv with `source venv/bin/activate`
 - install requirements with `pip install -r requirements.txt`
 - run main with `python main.py` while being in the folder "project_dski_mnist_dataset" and having the venv activated
 - stop programm with `Ctrl + C`/`Strg + C`

@@ -1,0 +1,87 @@
+.navbar {
+    background-color: #673147;
+    font-family: 'Courier New', Courier, monospace;
+    color: white;
+}
+
+.navbar-brand {
+    font-family: 'Courier New', Courier, monospace;
+    color: white;
+}
+
+.nav-item {
+    font-family: 'Courier New', Courier, monospace;
+    color: white;
+}
+
+li {
+    font-family: Free Mono, monospace;
+    color: white;
+}
+
+.info {
+    font-family: Free Mono, monospace;
+    color: #673147;
+}
+
+.footer {
+    font-family: Free Mono, monospace;
+    background-color: #673147;
+    color: white;
+    text-align: center;
+    padding: 10px;
+}
+
+.prediction {
+    font-family: Free Mono, monospace;
+    color: #673147;
+}
+
+.confidence {
+    font-family: Free Mono, monospace;
+    color: #673147;
+}
+
+.predict-button { 
+    background-color: #673147;
+    font-family:'Courier New', Courier, monospace;
+    color: white;
+}
+
+#predict-button {
+    background-color: #673147;
+    font-family:'Courier New', Courier, monospace;
+    color: white;
+}
+
+#reset-button {
+    background-color: #673147;
+    font-family:'Courier New', Courier, monospace;
+    color: white;
+}
+
+html, body {
+  height: 100%;
+  margin: 0;
+}
+
+.page-wrapper {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+#active {
+    font-family: 'Courier New', Courier, monospace;
+    color: #CB90A8;
+}
+
+.statistics-container {
+    font-family: Free Mono, monospace;
+    color: #673147;
+}
+
+history-container {
+    font-family: Free Mono, monospace;
+    color: #673147;
+}
