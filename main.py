@@ -1,5 +1,6 @@
 ### Imports 
 import base64
+import datetime
 from io import BytesIO
 import io
 from typing import Counter
@@ -9,7 +10,6 @@ from PIL import Image, ImageOps
 from flask import Flask, render_template, request, jsonify, flash, url_for, redirect
 import numpy as np
 import os
-import re
 
 app = Flask(__name__)
 app.secret_key = "supersecretkey"
@@ -196,6 +196,23 @@ def feedback():
 
     correct = int(predicted_label == true_label)
 
+    save_dir = os.path.join("pictures_drawn", str(true_label))
+    os.makedirs(save_dir, exist_ok=True)
+    
+    img_str = image_data.split(",")[1]
+    img_bytes = base64.b64decode(img_str)
+
+    img = Image.open(BytesIO(img_bytes)).convert("L")
+    img = img.resize((28, 28))
+
+    img = Image.eval(img, lambda x: 255 - x)
+
+    timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
+    filename = f"{timestamp}_{model_type}_pred{predicted_label}_conf{confidence}.png"
+    filepath = os.path.join(save_dir, filename)
+
+    img.save(filepath)
+    
     insert_result(
         model_name=model_type,
         input_data=image_data,
