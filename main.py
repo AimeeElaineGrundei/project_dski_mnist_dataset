@@ -16,7 +16,7 @@ app.secret_key = "supersecretkey"
 
 create_table()
 
-model_type = "MLP"
+model_type = "CNN"
 
 if model_type == "MLP":
     model_path = os.path.join(os.path.dirname(__file__), 'models', 'mnist_model_simple.keras')
@@ -160,24 +160,27 @@ def predict():
     
     image_data = image_data.split(",")[1]
     image = Image.open(io.BytesIO(base64.b64decode(image_data))).convert("L")  # grayscale
-    image = ImageOps.invert(image)  # invert black/white
-    
-    # shrink image to 28x28
-    image = image.resize((28, 28))
-    
-    # cut picture and center the digit
-    image = ImageOps.fit(image, (28, 28), centering=(0.5, 0.5))
-
-    # to numpy array and convert (canvas background=0, digit=255)
-    img_array = np.array(image).astype("float32") / 255.0 # normalize to [0, 1]
+    mean_val = np.mean(np.array(image))
+    if mean_val > 127:
+        image = ImageOps.invert(image)
 
     if model_type == "CNN":
+        image = image.resize((28, 28), Image.LANCZOS)
+        img_array = np.array(image).astype("float32") / 255.0
         # reshape to (1, 28, 28, 1)
         img_array = img_array.reshape(1, 28, 28, 1)
+        
     elif model_type == "MLP":
+        # shrink image to 28x28
+        image = image.resize((28, 28))
+        # cut picture and center the digit
+        image = ImageOps.fit(image, (28, 28), centering=(0.5, 0.5))
+        # to numpy array and convert (canvas background=0, digit=255)
+        img_array = np.array(image).astype("float32") / 255.0 # normalize to [0, 1]
         # reshape to (1, 28, 28, 1)
         img_array = img_array.reshape(1, 28 * 28)
     
+    print("Test"*10, img_array)
     predictions = model.predict(img_array)
     predicted_label = int(np.argmax(predictions))
     confidence = float(np.max(predictions))
