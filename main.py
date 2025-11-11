@@ -16,12 +16,14 @@ app.secret_key = "supersecretkey"
 
 create_table()
 
-model_type = "MLP"
+model_type = "CNN_optimized"  # Options: "MLP", "CNN", "CNN_optimized"
 
 if model_type == "MLP":
     model_path = os.path.join(os.path.dirname(__file__), 'models', 'mnist_model_simple.keras')
 elif model_type == "CNN":
     model_path = os.path.join(os.path.dirname(__file__), 'models', 'mnist_model1.keras')
+elif model_type == "CNN_optimized":
+    model_path = os.path.join(os.path.dirname(__file__), 'models', 'mnist_model_optimized.keras')
 
 def load_model(model_path: str) -> keras.Model:
     """Load a Keras model from the specified path."""
@@ -184,7 +186,7 @@ def predict():
     # to numpy array and convert (canvas background=0, digit=255)
     img_array = np.array(image).astype("float32") / 255.0 # normalize to [0, 1]
 
-    if model_type == "CNN":
+    if model_type == "CNN" or model_type == "CNN_optimized":
         # reshape to (1, 28, 28, 1)
         img_array = img_array.reshape(1, 28, 28, 1)
         

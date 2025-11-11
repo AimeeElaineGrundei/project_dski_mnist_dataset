@@ -5,3 +5,4 @@ keras
 tensorflow
 matplotlib
 flask
+optuna
