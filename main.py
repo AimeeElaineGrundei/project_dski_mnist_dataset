@@ -16,27 +16,24 @@ app.secret_key = "supersecretkey"
 
 create_table()
 
-model_type = "CNN_optimized"  # Options: "MLP", "CNN", "CNN_optimized"
-
-if model_type == "MLP":
-    model_path = os.path.join(os.path.dirname(__file__), 'models', 'mnist_model_simple.keras')
-elif model_type == "CNN":
-    model_path = os.path.join(os.path.dirname(__file__), 'models', 'mnist_model1.keras')
-elif model_type == "CNN_optimized":
-    model_path = os.path.join(os.path.dirname(__file__), 'models', 'mnist_model_optimized.keras')
+def choose_model_path(model_type: str) -> str:
+    """Choose the model path based on the model type."""
+    if model_type == "MLP":
+        model_path = os.path.join(os.path.dirname(__file__), 'models', 'mnist_model_simple.keras')
+    elif model_type == "CNN":
+        model_path = os.path.join(os.path.dirname(__file__), 'models', 'mnist_model1.keras')
+    elif model_type == "CNN_optimized":
+        model_path = os.path.join(os.path.dirname(__file__), 'models', 'mnist_model_optimized.keras')
+    
+    return model_path
 
 def load_model(model_path: str) -> keras.Model:
     """Load a Keras model from the specified path."""
     return keras.models.load_model(model_path)
 
+model_type = "CNN_optimized"  # Options: "MLP", "CNN", "CNN_optimized"
+model_path = choose_model_path(model_type)
 model = load_model(model_path)
-
-def convert_data(image_array):
-    """Convert the input image array to the required format."""
-    converted_data_list = [[[x[1] / image_array.max()] for x in lst] for lst in image_array]
-    converted_data = np.array([converted_data_list])
-    
-    return converted_data
 
 @app.route('/')
 def index():
@@ -44,11 +41,17 @@ def index():
 
 @app.route("/history")
 def history():
-    # get all results from the database
+    """Display the history of predictions.
+    
+    Prepares data from the database and renders the history template.
+    
+    The database returns rows with the following structure:
+        (id, timestamp, model_name, input_data, 
+        predicted_label, true_label, correct, confidence)
+    """
+    
     results = fetch_all()
 
-    # prepare results for the template
-    # The DB returns: (id, timestamp, model_name, input_data, predicted_label, true_label, correct, confidence)
     history_list = []
     
     for row in results:
@@ -74,11 +77,12 @@ def statistics():
         selected_model = all_models[0]
 
     digits = [str(i) for i in range(10)]
-
+    dict_digits = {d: 0 for d in digits}
+    
     if selected_model == 'all':
-        predictions_per_model = {model: {d: 0 for d in digits} for model in all_models}
-        correct_counts_per_model = {model: {d: 0 for d in digits} for model in all_models}
-        total_counts_per_model = {model: {d: 0 for d in digits} for model in all_models}
+        predictions_per_model = {model: dict_digits.copy() for model in all_models}
+        correct_counts_per_model = {model: dict_digits.copy() for model in all_models}
+        total_counts_per_model = {model: dict_digits.copy() for model in all_models}
 
         for row in all_results:
             model_name = row[2]
@@ -122,9 +126,9 @@ def statistics():
         correct_predictions = sum([row[6] for row in results])
         accuracy = round((correct_predictions / total_predictions * 100) if total_predictions else 0, 2)
 
-        predictions_counter = {str(i): 0 for i in range(10)}
-        correct_counts = {str(i): 0 for i in range(10)}
-        total_counts = {str(i): 0 for i in range(10)}
+        predictions_counter = dict_digits.copy()
+        correct_counts = dict_digits.copy()
+        total_counts = dict_digits.copy()
 
         for row in results:
             pred = str(row[4])
