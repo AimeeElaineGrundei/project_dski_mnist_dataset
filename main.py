@@ -203,7 +203,7 @@ def predict():
     confidence = float(np.max(predictions))
     
     return jsonify({
-        "prediction": int(peredicted_label),
+        "prediction": int(predicted_label),
         "confidence": float(confidence),
         "image_array": img_array.tolist()
     })
