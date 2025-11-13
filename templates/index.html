@@ -103,7 +103,7 @@
                 document.getElementById('feedback-section').style.display = 'block';
                 document.getElementById('predicted_label_input').value = data.prediction;
                 document.getElementById('confidence_input').value = data.confidence;
-                document.getElementById('imageData_input').value = imageData;
+                document.getElementById('image_array_input').value = data.image_array;
             })
             .catch(err => console.error(err));
         });
@@ -120,7 +120,7 @@
     <div id="feedback-section" class="feedback" style="display:none; text-align:center; margin-top:30px;">
         <h4>Was this prediction correct?</h4>
         <form method="POST" action="/feedback" style="display: inline-block; margin-top: 10px;">
-            <input type="hidden" id="imageData_input" name="image">
+            <input type="hidden" id="image_array_input" name="image_array">
             <input type="hidden" id="predicted_label_input" name="predicted_label">
             <input type="hidden" id="confidence_input" name="confidence">
 

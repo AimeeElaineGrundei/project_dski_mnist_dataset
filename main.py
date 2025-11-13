@@ -182,7 +182,7 @@ def predict():
         # Add square padding
         w, h = image.size
         side = max(w, h)
-        square = Image.new("L", (side, side), 0)  # black background 
+        square = Image.new("L", (side, side), 0)
         square.paste(image, ((side - w) // 2, (side - h) // 2))
         image = square
         
@@ -204,12 +204,13 @@ def predict():
     
     return jsonify({
         "prediction": int(predicted_label),
-        "confidence": float(confidence)
+        "confidence": float(confidence),
+        "image_array": img_array.tolist()
     })
 
 @app.route("/feedback", methods=["POST"])
 def feedback():
-    image_data = request.form["image"]
+    image_data = request.form["image_array"]
     predicted_label = request.form["predicted_label"]
     true_label = request.form["true_label"]
     confidence = request.form.get("confidence", None)
@@ -219,13 +220,9 @@ def feedback():
     save_dir = os.path.join("pictures_drawn", str(true_label))
     os.makedirs(save_dir, exist_ok=True)
     
-    img_str = image_data.split(",")[1]
-    img_bytes = base64.b64decode(img_str)
-
-    img = Image.open(BytesIO(img_bytes)).convert("L")
-    img = img.resize((28, 28))
-
-    img = Image.eval(img, lambda x: 255 - x)
+    img_lst = image_data.split(",")
+    img_array = np.array(img_lst, dtype=float)
+    img = Image.fromarray((img_array * 255).astype(np.uint8).reshape(28, 28), mode='L')
 
     timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
     filename = f"{timestamp}_{model_type}_pred{predicted_label}_conf{confidence}.png"
@@ -235,7 +232,7 @@ def feedback():
     
     insert_result(
         model_name=model_type,
-        input_data=image_data,
+        input_data=img_array,
         predicted_label=predicted_label,
         true_label=true_label,
         correct=correct,
