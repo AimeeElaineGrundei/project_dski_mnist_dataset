@@ -31,7 +31,7 @@ def load_model(model_path: str) -> keras.Model:
     """Load a Keras model from the specified path."""
     return keras.models.load_model(model_path)
 
-model_type = "CNN_optimized"  # Options: "MLP", "CNN", "CNN_optimized"
+model_type = "MLP"  # Options: "MLP", "CNN", "CNN_optimized"
 model_path = choose_model_path(model_type)
 model = load_model(model_path)
 
@@ -169,24 +169,28 @@ def predict():
     mean_val = np.mean(np.array(image))
     if mean_val > 127:
         image = ImageOps.invert(image)
-        
-    img_array = np.array(image)
-    img_array = np.where(img_array > 20, img_array, 0)  # delete noise
+    
+    if model_type == "MLP":
+        image = image.resize((28, 28))
+    else:
+        img_array = np.array(image)
+        img_array = np.where(img_array > 20, img_array, 0)  # delete noise
 
-    coords = np.column_stack(np.where(img_array > 0))   # coordinates of non-zero pixels
-    if coords.size != 0:  # only crop if there are non-zero pixels
-        y_min, x_min = coords.min(axis=0)
-        y_max, x_max = coords.max(axis=0)
-        image = image.crop((x_min, y_min, x_max, y_max))  # crop to bounding box
+        coords = np.column_stack(np.where(img_array > 0))   # coordinates of non-zero pixels
+        if coords.size != 0:  # only crop if there are non-zero pixels
+            y_min, x_min = coords.min(axis=0)
+            y_max, x_max = coords.max(axis=0)
+            image = image.crop((x_min, y_min, x_max, y_max))  # crop to bounding box
 
-        # Add square padding
-        w, h = image.size
-        side = max(w, h)
-        square = Image.new("L", (side, side), 0)
-        square.paste(image, ((side - w) // 2, (side - h) // 2))
-        image = square
+            # Add square padding
+            w, h = image.size
+            side = max(w, h)
+            square = Image.new("L", (side, side), 0)
+            square.paste(image, ((side - w) // 2, (side - h) // 2))
+            image = square
+            
+        image = ImageOps.fit(image, (28, 28), Image.LANCZOS, centering=(0.5, 0.5))
         
-    image = ImageOps.fit(image, (28, 28), Image.LANCZOS, centering=(0.5, 0.5))
     # to numpy array and convert (canvas background=0, digit=255)
     img_array = np.array(image).astype("float32") / 255.0 # normalize to [0, 1]
 
