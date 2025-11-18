@@ -31,7 +31,7 @@ def load_model(model_path: str) -> keras.Model:
     """Load a Keras model from the specified path."""
     return keras.models.load_model(model_path)
 
-model_type = "MLP"  # Options: "MLP", "CNN", "CNN_optimized"
+model_type = "CNN_optimized"  # Options: "MLP", "CNN", "CNN_optimized"
 model_path = choose_model_path(model_type)
 model = load_model(model_path)
 
@@ -172,6 +172,8 @@ def predict():
     
     if model_type == "MLP":
         image = image.resize((28, 28))
+    elif model_type == "CNN":
+        image = image.resize((28, 28), Image.LANCZOS)
     else:
         img_array = np.array(image)
         img_array = np.where(img_array > 20, img_array, 0)  # delete noise
