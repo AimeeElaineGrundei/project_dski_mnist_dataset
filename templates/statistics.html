@@ -28,27 +28,28 @@
     </div>
   </div>
 </nav>
+
 <div class="content">
-    <h2 style="text-align: center; margin-top: 20px; font-family: 'Courier New', Courier, monospace; color: #673147; font-weight: bold"><b>Statistics</b></h2>
-    <div class="statistics-container" style="margin-top: 30px; max-width: 600px; margin-left: auto; margin-right: auto;">
-        <p style="font-size: 18px;">Select Model:
-          <select id="modelSelect" class="form-select" style="width: 200px; display: inline-block;">
+    <h2 id="statistics-heading"><b>Statistics</b></h2>
+    <div class="statistics-container">
+        <p id="sub_heading">Select Model:
+          <select id="modelSelect" class="form-select">
               <option value="all" {% if selected_model == 'all' %}selected{% endif %}>All Models</option>
               {% for model in models %}
               <option value="{{ model }}" {% if selected_model == model %}selected{% endif %}>{{ model }}</option>
               {% endfor %}
           </select>
         </p>
-        <p style="font-size: 18px;">Total Predictions Made: {{ total_predictions }}</p>
-        <p style="font-size: 18px;">Correct Predictions: {{ correct_predictions }}</p>
-        <p style="font-size: 18px;">Accuracy: {{ accuracy }}%</p>
+        <p id="sub_heading">Total Predictions Made: {{ total_predictions }}</p>
+        <p id="sub_heading">Correct Predictions: {{ correct_predictions }}</p>
+        <p id="sub_heading">Accuracy: {{ accuracy }}%</p>
     </div>
 
-    <div class="charts-container" style="margin-top: 40px; max-width: 800px; margin-left: auto; margin-right: auto;">
-        <h4 style="text-align: center;">Predictions per Digit</h4>
+    <div class="charts-container">
+        <h4 id="chart_heading">Predictions per Digit</h4>
         <canvas id="predictionsChart" width="400" height="200"></canvas>
 
-        <h4 style="text-align: center; margin-top: 30px;">Accuracy per Digit</h4>
+        <h4 id="chart_heading" style="margin-top: 30px;">Accuracy per Digit</h4>
         <canvas id="accuracyChart" width="400" height="200"></canvas>
     </div>
 </div>
@@ -149,9 +150,10 @@
 </script>
 
 
-<div class="footer" style="text-align: center; margin-top: 30px;">
-        <footer><p>&copy; 2025 Number Predictor by Elaine Grundei and Hannah Kraft</p></footer>
+<div class="footer">
+    <footer><p>&copy; 2025 Number Predictor by Elaine Grundei and Hannah Kraft</p></footer>
 </div>
+
 </div>
 </body>
 </html>

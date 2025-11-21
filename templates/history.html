@@ -30,8 +30,8 @@
 </nav>
 
 <div class="content">
-    <h2 style="text-align: center; margin-top: 20px; font-family: 'Courier New', Courier, monospace; color: #673147; font-weight: bold"><b>Prediction History</b></h2>
-    <div class="history-container" style="margin-top: 30px; max-width: 800px; margin-left: auto; margin-right: auto;">
+    <h2 id="history_heading"><b>Prediction History</b></h2>
+    <div class="history-container">
         {% if history %}
             <table id="history_table" class="table table-striped">
                 <thead>
@@ -60,10 +60,11 @@
         {% endif %}
     </div>
 </div>
-<div class="footer" style="text-align: center; margin-top: 30px;">
+<div class="footer">
         <footer><p>&copy; 2025 Number Predictor by Elaine Grundei and Hannah Kraft</p></footer>
 </div>
 </div>
+
 <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
 <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
   
@@ -76,5 +77,6 @@
         });
     });
   </script>
+
 </body>
 </html>
