@@ -1,3 +1,14 @@
+html, body {
+  height: 100%;
+  margin: 0;
+}
+
+.page-wrapper {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
 .navbar {
     background-color: #673147;
     font-family: 'Courier New', Courier, monospace;
@@ -19,9 +30,9 @@ li {
     color: white;
 }
 
-.info {
-    font-family: Free Mono, monospace;
-    color: #673147;
+#active {
+    font-family: 'Courier New', Courier, monospace;
+    color: #CB90A8;
 }
 
 .footer {
@@ -29,65 +40,125 @@ li {
     background-color: #673147;
     color: white;
     text-align: center;
+    margin-top: 30px;
     padding: 10px;
 }
 
+#homepage_heading {
+    text-align: center; 
+    margin-top: 20px;
+    font-family: 'Courier New', 
+    Courier, monospace;
+    color: #673147;
+}
+
+#canvas {
+    border: 1px solid #673147;
+}
+
+.homepage_predict_button {
+    text-align: center; 
+    margin-top: 20px;
+}
+
+#predict-button {
+    padding: 10px 20px; 
+    font-size: 16px; 
+    font-family: 'Courier New', Courier, monospace;
+    background-color: #673147;
+    color: white;
+}
+
 .prediction {
+    text-align: center; 
+    margin-top: 20px;
     font-family: Free Mono, monospace;
     color: #673147;
 }
 
 .confidence {
+    text-align: center; 
+    margin-top: 10px;
     font-family: Free Mono, monospace;
     color: #673147;
-}
-
-.predict-button { 
-    background-color: #673147;
-    font-family:'Courier New', Courier, monospace;
-    color: white;
-}
-
-#predict-button {
-    background-color: #673147;
-    font-family:'Courier New', Courier, monospace;
-    color: white;
-}
-
-#reset-button {
-    background-color: #673147;
-    font-family:'Courier New', Courier, monospace;
-    color: white;
 }
 
 #submit-feedback {
+    padding: 10px 20px;
+    font-size: 16px; 
+    font-family: 'Courier New', Courier, monospace;
     background-color: #673147;
-    font-family:'Courier New', Courier, monospace;
     color: white;
 }
 
-html, body {
-  height: 100%;
-  margin: 0;
+#reset-section {
+    text-align: center; 
+    margin-top: 10px;
 }
 
-.page-wrapper {
-  display: flex;
-  flex-direction: column;
-  min-height: 100vh;
+#reset-button {
+    padding: 5px 15px; 
+    font-size: 14px; 
+    font-family:'Courier New', Courier, monospace;
+    background-color: #673147;
+    color: white;
 }
 
-#active {
-    font-family: 'Courier New', Courier, monospace;
-    color: #CB90A8;
-}
-
-.statistics-container {
+.info {
     font-family: Free Mono, monospace;
     color: #673147;
 }
 
-history-container {
+#statistics-heading {
+    text-align: center; 
+    margin-top: 20px; 
+    font-family: 'Courier New', Courier, monospace; 
+    color: #673147; 
+    font-weight: bold;
+}
+
+.statistics-container {
+    margin-top: 30px; 
+    max-width: 600px; 
+    margin-left: auto; 
+    margin-right: auto;
+    font-family: Free Mono, monospace;
+    color: #673147;
+}
+
+#sub_heading {
+    font-size: 18px;
+}
+
+#modelSelect {
+    width: 200px; 
+    display: inline-block;
+}
+
+.charts-container {
+    margin-top: 40px; 
+    max-width: 800px; 
+    margin-left: auto; 
+    margin-right: auto;
+}
+
+#chart_heading {
+    text-align: center;
+}
+
+#history_heading {
+    text-align: center; 
+    margin-top: 20px; 
+    font-family: 'Courier New', Courier, monospace; 
+    color: #673147; 
+    font-weight: bold;
+}
+
+.history-container {
+    margin-top: 30px; 
+    max-width: 800px; 
+    margin-left: auto; 
+    margin-right: auto;
     font-family: Free Mono, monospace;
     color: #673147;
 }

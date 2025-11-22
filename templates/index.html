@@ -25,18 +25,25 @@
             <li><a class="nav-item me-3" href="history">History</a></li>
         </ul>
     </div>
+
   </div>
 </nav>
 
-    <div class="header" style="text-align: center; margin-top: 20px;">
-        <h1 style="font-family: 'Courier New', Courier, monospace; color: #673147;"><b>Number Predictor</b></h1>
-    </div>
+
+    <h1 id="homepage_heading"><b>Number Predictor</b></h1>
 
     <div class="info" style="text-align: center; margin-top: 10px;">
         <p>Draw a digit (0-9) on the canvas below. Double click to clear the canvas.</p>
     </div>
-    <div class="canvas-container" style="text-align: center; margin-top: 20px;">
-    <canvas id="canvas" width="280" height="280" style="border:1px solid #673147;"></canvas>
+
+    <div class="canvas-container" style="text-align: center; margin-top: 20px">
+    <canvas id="canvas" width="280" height="280"></canvas>
+    </div>
+
+    <div class="homepage_predict_button">
+        <button type="button" id="predict-button" class="btn rounded">
+            Predict
+        </button>
     </div>
 
     <script>
@@ -77,13 +84,6 @@
         });
     </script>
 
-    <div class="buttons" style="text-align: center; margin-top: 20px;">
-        <button type="button" id="predict-button" class="btn rounded" 
-                style="padding: 10px 20px; font-size: 16px; font-family: 'Courier New', Courier, monospace">
-            Predict
-        </button>
-    </div>
-
     <script>
         document.getElementById('predict-button').addEventListener('click', () => {
             const imageData = canvas.toDataURL();
@@ -109,11 +109,11 @@
         });
     </script>
 
-   <div class="prediction" style="text-align: center; margin-top: 20px;">
+    <div class="prediction">
         <h2>Predicted Number: <span id="predicted-number">?</span></h2>
     </div>
 
-    <div class="confidence" style="text-align: center; margin-top: 10px;">
+    <div class="confidence">
         <h3>Confidence: <span id="confidence-score">?</span></h3>
     </div>
 
@@ -129,15 +129,14 @@
                 <input type="number" name="true_label" id="true_label" min="0" max="9" required class="form-control" style="width: 100px; margin: 0 auto;">
             </div>
 
-            <button id="submit-feedback" type="submit" class="btn rounded" 
-                style="padding: 10px 20px; font-size: 16px; font-family: 'Courier New', Courier, monospace">
-                Submit Feedback
+            <button id="submit-feedback" type="submit" class="btn rounded">
+                Submit Feedback 
             </button>
         </form>
     </div>
 
-    <div class="reset" style="text-align: center; margin-top: 10px;">
-        <button id="reset-button" class="btn rounded" style="padding: 5px 15px; font-size: 14px; font-family: 'Courier New', Courier, monospace">Reset</button>
+    <div id="reset-section" class="reset">
+        <button id="reset-button" class="btn rounded">Reset</button>
         <script>
             document.getElementById('reset-button').addEventListener('click', () => {
                 ctx.fillStyle = "white";
@@ -152,9 +151,11 @@
             });
         </script>
     </div>
-    <div class="footer" style="text-align: center; margin-top: 30px;">
+
+    <div class="footer">
         <footer><p>&copy; 2025 Number Predictor by Elaine Grundei and Hannah Kraft</p></footer>
     </div>
 </div>
 </body>
 </html>
+
